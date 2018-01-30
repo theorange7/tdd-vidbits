@@ -6,8 +6,17 @@
 <h1>Save a video</h1>
 <form action="/videos" method="post">
     <label for="title">Title of video:</label>
-    <input type="text" name="title" id="title-input">
-    <label for="description">Brief Description:</label>
-    <textarea type="text" name="description" id="description-input"></textarea>
+    <input type="text" name="title" id="title-input" value="{{video.title}}">
+    {{#with video.errors.title as |error|}}
+        <span class="error">{{error.message}}</span>
+    {{/with}}
+    <label for="description">B  rief Description:</label>
+    <textarea type="text" name="description" id="description-input"> {{video.description}}</textarea>
+    {{!-- {{#with video.errors.description as |error|}}
+    <span class="error">{{error.message}}</span>
+    {{/with}} --}}
+    <label for="videoUrl">URL of video:</label>
+    <input type="text" name="videoUrl" id="videoUrl-input" value="{{video.videoUrl}}">
+
     <input type="submit" value="Submit" id="submit-button">
 </form>

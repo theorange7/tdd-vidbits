@@ -3,20 +3,33 @@ const router = require('express').Router();
 // import model
 const Video = require('../models/video');
 
-router.get('/', (req, res, next) => {
-    res.render('index');
-});
+router.get(['/videos', '/'], async(req, res, next) => {
+    const videos = await Video.find({});
+    res.render('videos/index', { videos });
+})
 
-router.get('/videos/create', async (req, res, next) => {
+router.get('/videos/create', (req, res, next) => {
     res.render('create');
 });
 
+router.get('/videos/:id', async (req, res, next) => {
+    console.log("req.params.id", req.params.id)
+    const video = await Video.findById(req.params.id);
+    res.render('videos/show', { video });
+})
+
 router.post('/videos', async (req, res, next) => {
     const {title, description} = req.body;
-    const newVideo = new Video({ title, description });
-    const video = await newVideo.save(); 
-    
-    res.status(201).render('show', {video});
+    const video = new Video({ title, description });
+
+    video.validateSync();
+    if (video.errors) {
+        res.status(400).render('create', { video });
+    } else {
+        await video.save();
+        // res.redirect('/videos/' + video.id); this doesn't work... why?
+        res.status(302).render('videos/show', { video });
+    }
 });
 
 module.exports = router;

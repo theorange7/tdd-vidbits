@@ -25,5 +25,12 @@ describe('Model: Video', () => {
 
       assert.strictEqual(video.title, titleAsInt.toString());
     });
+
+    /* it('is required', () => {
+      const emptyTitle = '';
+      const video = new Video({ title: emptyTitle });
+
+      assert.
+    }) */
   });
 })
