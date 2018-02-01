@@ -13,6 +13,7 @@ describe('user visits create page', () => {
 
             browser.setValue('#title-input', videoToCreate.title);
             browser.setValue('#description-input', videoToCreate.description);
+            browser.setValue('#url-input', videoToCreate.url);
             browser.click('#submit-button');
 
             assert.include(browser.getText('body'), videoToCreate.title);

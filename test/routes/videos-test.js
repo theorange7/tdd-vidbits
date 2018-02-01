@@ -1,6 +1,6 @@
 const {assert} = require('chai');
 const request = require('supertest');
-const { parseTextFromHTML, buildVideoObject } = require('../test-utils');
+const { parseTextFromHTML, buildVideoObject, seedDatabase } = require('../test-utils');
 const { connectDatabaseAndDropData, diconnectDatabase } = require('../setup-teardown-utils');
 
 // import model
@@ -92,7 +92,7 @@ describe('Server path: /videos', () => {
             assert.equal(response.status, 400);
         });
         
-        it('renders video form when title is missing', async () => {
+        /* it('renders video form when title is missing', async () => {
             const invalidVideoToCreate = {
                 title: '',
                 description: 'test'
@@ -108,8 +108,7 @@ describe('Server path: /videos', () => {
             assert.equal(allVideos.length, 0);
             assert.equal(response.status, 400);
             assert.include(parseTextFromHTML(response.text, 'body'), 'Path `title` is required');
-        });
-
+        }); */
 
         it('preserves other field values when title is missing', async () => {
             const invalidVideoToCreate = {
@@ -129,6 +128,17 @@ describe('Server path: /videos', () => {
             assert.include(parseTextFromHTML(response.text, 'body'), 'Path `title` is required');
             assert.include(parseTextFromHTML(response.text, 'body'), invalidVideoToCreate.description);
         });
+
+        it('video document has a URL field', async ()=> {
+            const title = 'My favorite video';
+            const description = 'Just the best vid on earth';
+            const url = 'https://www.youtube.com/watch?v=4VzuOWy6-Jc';
+            const video = await Video.create({ title, description, url });
+
+            assert.equal(video.title, title);
+            assert.equal(video.description, description);
+            assert.equal(video.url, url);
+        });
     });
 });
 
@@ -139,8 +149,7 @@ describe('Server path: /videos/:id', () => {
     describe('GET', () => {
         it('renders requested video by id', async () => {
             // Setup
-            const videoToCreate = buildVideoObject();
-            const video = await Video.create(videoToCreate);
+            const video = await seedDatabase();
             
             // Exercise
             const response = await request(app)
@@ -149,6 +158,7 @@ describe('Server path: /videos/:id', () => {
             // Verify
             assert.equal(response.status, 200);
             assert.include(response.text, video.title);
+            assert.include(response.text, video.url)
         })
     })
 });

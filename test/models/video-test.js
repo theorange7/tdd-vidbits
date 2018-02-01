@@ -1,5 +1,8 @@
 const {assert} = require('chai');
 const {mongoose, databaseUrl, options} = require('../../database');
+
+const {buildVideoObject} = require('../test-utils');
+
 const Video = require('../../models/video');
 
 
@@ -26,11 +29,35 @@ describe('Model: Video', () => {
       assert.strictEqual(video.title, titleAsInt.toString());
     });
 
-    /* it('is required', () => {
-      const emptyTitle = '';
-      const video = new Video({ title: emptyTitle });
+    it('is required', () => {
+      const videoToCreate = buildVideoObject();
+      videoToCreate.title = null;
+      const video = new Video(videoToCreate);
 
-      assert.
-    }) */
-  });
+      video.validateSync();
+
+      assert.equal(video.errors.title.message, 'Path `title` is required.');
+    });
+  }); 
+
+  describe('#url', () => {
+    it('Should be a String', () => {
+      const urlAsInt = 123;
+      const titleAsInt = 123;
+      const video = new Video({ title: titleAsInt, url: urlAsInt });
+
+      assert.strictEqual(video.title, titleAsInt.toString());
+      assert.strictEqual(video.url, urlAsInt.toString());
+    });
+    
+    it('is required', () => {
+      const videoToCreate = buildVideoObject();
+      videoToCreate.url = null;
+
+      const video = new Video(videoToCreate);
+      video.validateSync();
+
+      assert.equal(video.errors.url.message, 'Path `url` is required.');
+    });
+  })
 })

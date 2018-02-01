@@ -1,18 +1,23 @@
 const {jsdom} = require('jsdom');
+const Video = require('../models/video');
+
+const generateRandomUrl = (domain) => {
+  return `http://${domain}/${Math.random()}`;
+};
 
 // Create and return a sample video object
 const buildVideoObject = (options = {}) => {
   const title = options.title || 'My favorite video';
   const description = options.description || 'Just the best vid on earth';
-  const videoUrl = options.videoUrl || 'https://www.youtube.com/watch?v=4VzuOWy6-Jc';
-  return {title, videoUrl, description};
+  const url = options.url || generateRandomUrl('localhost')
+  return {title, url, description};
 };
 
-// Add a sample Item object to mongodb
-/* const seedItemToDatabase = async (options = {}) => {
-  const item = await Item.create(buildItemObject(options));
-  return item;
-}; */
+// Add a sample video object to mongodb
+const seedDatabase = async (options = {}) => {
+  const video = await Video.create(buildVideoObject(options));
+  return video;
+};
 
 // extract text from an Element by selector.
 const parseTextFromHTML = (htmlAsString, selector) => {
@@ -26,6 +31,6 @@ const parseTextFromHTML = (htmlAsString, selector) => {
 
 module.exports = {
   buildVideoObject,
-  /*seedItemToDatabase,*/
+  seedDatabase,
   parseTextFromHTML
 };

@@ -1,16 +1,26 @@
-const {mongoose} = require('../database');
+const { mongoose } = require('../database');
 
-const Video = mongoose.model(
-  'Video',
-  mongoose.Schema({
-    title: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String
-    }
-  })
-);
+function validator(val) {
+  return typeof val == 'string' || val instanceof String;
+}
+
+var custom = [validator, 'Title must be of type string!'];
+
+const VideoSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    validate: custom
+  },
+  description: {
+    type: String
+  },
+  url: {
+    type: String,
+    required: true
+  }
+});
+
+const Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;

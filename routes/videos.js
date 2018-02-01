@@ -13,14 +13,13 @@ router.get('/videos/create', (req, res, next) => {
 });
 
 router.get('/videos/:id', async (req, res, next) => {
-    console.log("req.params.id", req.params.id)
     const video = await Video.findById(req.params.id);
     res.render('videos/show', { video });
 })
 
 router.post('/videos', async (req, res, next) => {
-    const {title, description} = req.body;
-    const video = new Video({ title, description });
+    const {title, description, url} = req.body;
+    const video = new Video({ title, description, url});
 
     video.validateSync();
     if (video.errors) {

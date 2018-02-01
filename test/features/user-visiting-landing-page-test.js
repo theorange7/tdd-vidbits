@@ -1,5 +1,9 @@
 const {assert} = require('chai');
-const {buildVideoObject } = require('../test-utils');
+const { buildVideoObject, seedDatabase } = require('../test-utils');
+
+const generateRandomUrl = (domain) => {
+    return `http://${domain}/${Math.random()}`;
+};
 
 describe('user visits root', () => {
     describe('without existing items', () => {
@@ -24,9 +28,7 @@ describe('user visits root', () => {
 
             const videoToCreate = buildVideoObject();
 
-            browser.setValue('#title-input', videoToCreate.title);
-            browser.setValue('#description-input', videoToCreate.description);
-            browser.click('#submit-button');
+            submitNewVideo(videoToCreate.title, videoToCreate.description, videoToCreate.url);
 
             browser.url('/');
 
@@ -39,15 +41,42 @@ describe('user visits root', () => {
             // setup
             browser.url('/videos/create');
 
-            const videoToCreate = buildVideoObject();
+            // const videoToCreate = buildVideoObject();
+            const title = 'My favorite video';
+            const description = 'Just the best vid on earth';
+            const randomUrl = generateRandomUrl('localhost');
 
-            browser.setValue('#title-input', videoToCreate.title);
-            browser.setValue('#description-input', videoToCreate.description);
-            browser.setValue('#videoUrl-input', videoToCreate.videoUrl);
+            submitNewVideo(title, description, randomUrl);
+
+            assert.equal(browser.getAttribute('.video-player', 'src'), randomUrl);
+        });
+
+        it('can navigate to a video', async () => {
+            // setup
+            browser.url('/videos/create');
+
+            // const videoToCreate = buildVideoObject();
+            const title = 'My favorite video';
+            const description = 'Just the best vid on earth';
+            const randomUrl = generateRandomUrl('localhost');
+
+            submitNewVideo(title, description, randomUrl);
+
+            browser.url('/');
             
-            browser.click('#submit-button');
+            // exercise
+            browser.click('#videos-container a');
 
-            assert.equal(browser.getText('#videos-container'), '');
-        })
-    })
+            assert.include(browser.getText('body'), title);
+            assert.include(browser.getText('body'), description);
+        });
+    });
 });
+
+function submitNewVideo(title = "", description = "", randomUrl = "") {
+    browser.setValue('#title-input', title);
+    browser.setValue('#description-input', description);
+    browser.setValue('#url-input', randomUrl);
+
+    browser.click('#submit-button');
+}
