@@ -12,11 +12,13 @@
     {{/with}}
     <label for="description">Brief Description:</label>
     <textarea type="text" name="description" id="description-input"> {{video.description}}</textarea>
-    {{!-- {{#with video.errors.description as |error|}}
+    {{#with video.errors.description as |error|}}
     <span class="error">{{error.message}}</span>
-    {{/with}} --}}
+    {{/with}}
     <label for="url">URL of video:</label>
     <input type="text" name="url" id="url-input" value="{{video.url}}">
-
+    {{#with video.errors.url as |error|}}
+    <span class="error">{{error.message}}</span>
+    {{/with}}
     <input type="submit" value="Submit" id="submit-button">
 </form>

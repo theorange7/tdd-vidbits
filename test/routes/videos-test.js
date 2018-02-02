@@ -8,6 +8,10 @@ const Video = require('../../models/video');
 
 const app = require('../../app');
 
+const generateRandomUrl = (domain) => {
+    return `http://${domain}/${Math.random()}`;
+};
+
 describe('Server path: /', () => {
     beforeEach(connectDatabaseAndDropData);
 
@@ -162,3 +166,92 @@ describe('Server path: /videos/:id', () => {
         })
     })
 });
+
+describe('Server path /videos/:id/edit', () => {
+    beforeEach(connectDatabaseAndDropData);
+
+    afterEach(diconnectDatabase);
+    
+    describe('GET', () => {
+        it('renders a form for existing video', async () => {
+            // Setup
+            const video = await seedDatabase();
+
+            // Exercise
+            const response = await request(app)
+                .get('/videos/' + video._id + '/edit');
+
+            assert.include(response.text, video.title);
+            assert.include(response.text, video.description);
+            assert.include(response.text, video.url);
+        })
+    });
+})
+
+describe('Server path /videos/:id/updates', () => {
+    beforeEach(connectDatabaseAndDropData);
+
+    afterEach(diconnectDatabase);
+
+    describe('POST', () => {
+        it('updates the record', async () => {
+            // Setup
+            const video = await seedDatabase();
+            const newVideo = {
+                title: "This is a new title",
+                description: "This is a new description",
+                url: generateRandomUrl('localhost')
+            }
+
+            // Exercise
+            const response = await request(app)
+                .post('/videos/' + video._id + '/updates')
+                .type('form')
+                .send(newVideo);
+
+            assert.include(response.headers.location, video._id);    
+            assert.equal(response.status, 302);
+        })
+
+        it('does not save invalid updates', async () => {
+            // Setup
+            const video = await seedDatabase();
+            const newVideo = {
+                title: null
+            }
+
+            // Exercise
+            const response = await request(app)
+                .post('/videos/' + video._id + '/updates')
+                .type('form')
+                .send(newVideo);
+
+            assert.equal(response.status, 400);
+            assert.include(response.text, video.title);
+            assert.include(response.text, video.description);
+            assert.include(response.text, video.url);
+        })
+    })
+})
+
+describe('Server path /videos/:id/deletions', () => {
+    beforeEach(connectDatabaseAndDropData);
+
+    afterEach(diconnectDatabase);
+
+    describe('POST', () => {
+        it('deletes the record', async () => {
+            // Setup
+            const video = await seedDatabase();
+
+            // Exercise
+            const response = await request(app)
+                .post('/videos/' + video._id + '/deletions')
+                .send();
+
+            assert.include(response.headers.location, '/');
+            assert.equal(response.status, 302);
+            assert.notInclude(response.text, video.title);
+        })
+    })
+})

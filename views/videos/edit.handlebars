@@ -1,0 +1,21 @@
+<div class="title-container">
+    <div class="title-logo">
+        <img src="img/logo.svg" alt="">
+    </div>
+</div>
+<h1>Update</h1>
+<form action="/videos/{{video._id}}/updates" method="post">
+    <label for="title">Title of video:</label>
+    <input type="text" name="title" id="title-input" value="{{video.title}}"> {{#with video.errors.title as |error|}}
+    <span class="error">{{error.message}}</span>
+    {{/with}}
+    <label for="description">Brief Description:</label>
+    <textarea type="text" name="description" id="description-input"> {{video.description}}</textarea> {{#with video.errors.description as |error|}}
+    <span class="error">{{error.message}}</span>
+    {{/with}}
+    <label for="url">URL of video:</label>
+    <input type="text" name="url" id="url-input" value="{{video.url}}"> {{#with video.errors.url as |error|}}
+    <span class="error">{{error.message}}</span>
+    {{/with}}
+    <input type="submit" value="Submit" id="submit-button">
+</form>

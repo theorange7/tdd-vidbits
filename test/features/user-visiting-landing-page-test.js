@@ -1,9 +1,18 @@
 const {assert} = require('chai');
 const { buildVideoObject, seedDatabase } = require('../test-utils');
 
+// helper func
 const generateRandomUrl = (domain) => {
     return `http://${domain}/${Math.random()}`;
 };
+
+function submitNewVideo(title = "", description = "", randomUrl = "") {
+    browser.setValue('#title-input', title);
+    browser.setValue('#description-input', description);
+    browser.setValue('#url-input', randomUrl);
+
+    browser.click('#submit-button');
+}
 
 describe('user visits root', () => {
     describe('without existing items', () => {
@@ -72,11 +81,3 @@ describe('user visits root', () => {
         });
     });
 });
-
-function submitNewVideo(title = "", description = "", randomUrl = "") {
-    browser.setValue('#title-input', title);
-    browser.setValue('#description-input', description);
-    browser.setValue('#url-input', randomUrl);
-
-    browser.click('#submit-button');
-}
